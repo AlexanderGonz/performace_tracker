@@ -1,0 +1,35 @@
+# Use Node.js LTS as the base image
+FROM node:18-alpine
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy prisma files
+COPY prisma ./prisma
+
+# Copy .env file
+COPY .env ./
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Copy the rest of the app source code
+COPY . .
+
+# Make sure wait-for-it.sh is executable
+RUN chmod +x wait-for-it.sh
+
+# Make entrypoint script executable
+RUN chmod +x entrypoint.sh
+
+# Expose the port your app will run on
+EXPOSE 4000
+
+# Set the entrypoint
+ENTRYPOINT ["./entrypoint.sh"]
