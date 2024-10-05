@@ -22,3 +22,14 @@ CREATE TABLE "Metric" (
 
 -- AddForeignKey
 ALTER TABLE "Metric" ADD CONSTRAINT "Metric_athleteId_fkey" FOREIGN KEY ("athleteId") REFERENCES "Athlete"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+
+-- Insert initial data
+INSERT INTO "Athlete" (id, name, age, team) VALUES
+('1', 'John Doe', 25, 'Team A'),
+('2', 'Jane Smith', 30, 'Team B'),
+('3', 'Alice Johnson', 28, 'Team C');
+
+INSERT INTO "Metric" (id, athleteId, metricType, value, unit) VALUES
+('1', '1', 'Speed', 10.5, 'km/h');
+
