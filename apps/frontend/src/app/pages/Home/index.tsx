@@ -1,5 +1,6 @@
 import React from 'react';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import AthleteList from 'apps/frontend/src/app/components/AthleteList';
 
 const Home: React.FC = () => {
   return (
@@ -19,6 +20,7 @@ const Home: React.FC = () => {
           <h2>Welcome to Your Ionic React App</h2>
           <p>This is the home page of your application.</p>
         </div>
+        <AthleteList />
       </IonContent>
     </IonPage>
   );

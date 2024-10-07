@@ -30,6 +30,12 @@ INSERT INTO "Athlete" (id, name, age, team) VALUES
 ('2', 'Jane Smith', 30, 'Team B'),
 ('3', 'Alice Johnson', 28, 'Team C');
 
-INSERT INTO "Metric" (id, athleteId, metricType, value, unit) VALUES
-('1', '1', 'Speed', 10.5, 'km/h');
-
+INSERT INTO "Metric" (id, "athleteId", "metricType", value, unit, timestamp)
+VALUES (
+  '123e4567-e89b-12d3-a456-426614174001',
+  '1',
+  'Speed',
+  5.7,
+  'm/s',
+  CURRENT_TIMESTAMP
+);

@@ -1,32 +1,44 @@
 import { Context } from 'hono';
 import { PrismaClient } from '@prisma/client';
 import { CreateAthleteDto, UpdateAthleteDto, CreateMetricDto } from '../dtos/athleteDto';
+import { APIError } from '../utils/errors';
 
 const prisma = new PrismaClient();
 
 export const createAthlete = async (c: Context) => {
-  const data: CreateAthleteDto = await c.req.json();
-  const athlete = await prisma.athlete.create({
+  try {
+    const data: CreateAthleteDto = await c.req.json();
+    const athlete = await prisma.athlete.create({
     data,
-  });
-  return c.json(athlete, 201);
+    });
+    return c.json(athlete, 201);
+  } catch (error) {
+    throw new APIError('Failed to create athlete', 500);
+  }
 };
 
 export const getAllAthletes = async (c: Context) => {
-  const athletes = await prisma.athlete.findMany();
-  return c.json(athletes);
+  try {
+    const athletes = await prisma.athlete.findMany();
+    return c.json(athletes);
+  } catch (error) {
+    throw new APIError('Failed to get athletes', 500);
+  }
 };
 
 export const getAthleteById = async (c: Context) => {
   const id = c.req.param('id');
-  const athlete = await prisma.athlete.findUnique({
-    where: { id },
-    include: { metrics: true },
-  });
-  if (athlete) {
+  try {
+    const athlete = await prisma.athlete.findUnique({
+      where: { id },
+      include: { metrics: true },
+    });
+    if (!athlete) {
+      throw new APIError('Athlete not found', 404);
+    }
     return c.json(athlete);
-  } else {
-    return c.text('Athlete not found', 404);
+  } catch (error) {
+    throw new APIError('Failed to get athlete', 500);
   }
 };
 
@@ -40,7 +52,7 @@ export const updateAthlete = async (c: Context) => {
     });
     return c.json(athlete);
   } catch (error) {
-    return c.text('Athlete not found', 404);
+    throw new APIError('Failed to update athlete', 500);
   }
 };
 
@@ -56,7 +68,7 @@ export const addMetric = async (c: Context) => {
     });
     return c.json(metric, 201);
   } catch (error) {
-    return c.text('Athlete not found', 404);
+    throw new APIError('Failed to add metric', 500);
   }
 };
 
@@ -64,10 +76,14 @@ export const getMetrics = async (c: Context) => {
   const athleteId = c.req.param('id');
   const metricType = c.req.query('metricType');
   const whereClause = metricType ? { athleteId, type: metricType } : { athleteId };
-  const metrics = await prisma.metric.findMany({
-    where: whereClause,
-  });
-  return c.json(metrics);
+  try {
+    const metrics = await prisma.metric.findMany({
+      where: whereClause,
+    });
+    return c.json(metrics);
+  } catch (error) {
+    throw new APIError('Failed to get metrics', 500);
+  }
 };
 
 export const deleteAthlete = async (c: Context) => {
@@ -78,6 +94,6 @@ export const deleteAthlete = async (c: Context) => {
     });
     return c.text('', 204);
   } catch (error) {
-    return c.text('Athlete not found', 404);
+    throw new APIError('Failed to delete athlete', 500);
   }
 };
