@@ -12,10 +12,9 @@ import '@ionic/react/css/normalize.css';
 import '@ionic/react/css/structure.css';
 import '@ionic/react/css/typography.css';
 
-import Home from 'apps/frontend/src/app/pages/Home';
-import AthleteList from 'apps/frontend/src/app/components/AthleteList';
-import AthleteForm from 'apps/frontend/src/app/components/AthleteForm';
-import AthleteDetail from 'apps/frontend/src/app/pages/AthleteDetail';
+import Home from './pages/Home';
+import AthleteForm from './components/AthleteForm';
+import AthleteDetail from './pages/AthleteDetail';
 
 setupIonicReact();
 
@@ -27,11 +26,9 @@ const App: React.FC = () => (
       <IonReactRouter>
         <IonRouterOutlet>
           <Route path="/home" component={Home} exact={true} />
-          <Route path="/athletes" component={AthleteList} exact={true} />
           <Route path="/athletes/:id" component={AthleteDetail} exact={true} />
           <Route path="/athletes/new" component={AthleteForm} exact={true} />
           <Route path="/athletes/:id/edit" component={AthleteForm} exact={true} />
-          {/* <Route path="/athletes/:id/metrics/new" component={MetricForm} exact={true} /> */}
           <Route exact path="/" render={() => <Redirect to="/home" />} />
         </IonRouterOutlet>
       </IonReactRouter>

@@ -1,4 +1,4 @@
-import { Metric } from 'apps/frontend/src/domain/models/Metric';
+import { Metric } from '../../domain/models/Metric';
 import { Athlete, AthleteFormData } from '../../domain/models/Athlete';
 
 export const fetchAthletes = async (): Promise<Athlete[]> => {

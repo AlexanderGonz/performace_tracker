@@ -5,10 +5,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import ErrorMessage from '../../components/ErrorMessage';
 import { useAthlete } from '../../hooks/useAthleteForm';
 import Metric from '../../components/Metric';
-import { createMetric } from 'apps/frontend/src/app/services/api';
-import { useMetricForm } from 'apps/frontend/src/app/hooks/useMetricForm';
-import MetricModal from 'apps/frontend/src/app/components/MetricModal';
-import ActionButton from 'apps/frontend/src/app/components/ActionButton';
+import { createMetric } from '../../services/api';
+import { useMetricForm } from '../../hooks/useMetricForm';
+import MetricModal from '../../components/MetricModal';
+import ActionButton from '../../components/ActionButton';
 
 const AthleteDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();

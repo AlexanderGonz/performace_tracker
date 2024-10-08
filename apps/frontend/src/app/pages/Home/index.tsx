@@ -1,26 +1,25 @@
 import React from 'react';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import AthleteList from 'apps/frontend/src/app/components/AthleteList';
+import AthleteList from '../../components/AthleteList';
+import FloatingAddButton from '../../components/FloatingButton';
+
 
 const Home: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Home</IonTitle>
+          <IonTitle>Athletes</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Home</IonTitle>
+            <IonTitle size="large">Athletes</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <div className="ion-padding">
-          <h2>Welcome to Your Ionic React App</h2>
-          <p>This is the home page of your application.</p>
-        </div>
         <AthleteList />
+        <FloatingAddButton routePath="/athletes/new" />
       </IonContent>
     </IonPage>
   );

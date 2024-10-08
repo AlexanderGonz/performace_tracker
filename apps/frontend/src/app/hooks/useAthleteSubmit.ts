@@ -27,7 +27,7 @@ export const useAthleteSubmit = (athleteId?: string) => {
       if (athleteId) {
         router.goBack();
       } else {
-        router.push('/athletes', 'root', 'replace');
+        router.push('/home', 'root', 'replace');
       }
     } catch (error) {
       console.error('Failed to save athlete:', error);

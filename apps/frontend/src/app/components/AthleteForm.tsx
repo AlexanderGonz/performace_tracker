@@ -2,10 +2,10 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonItem, IonLabel } from '@ionic/react';
 import { useParams } from 'react-router-dom';
-import ErrorMessage from '../ErrorMessage';
-import { AthleteFormData } from '../../../domain/models/Athlete';
-import { useAthlete } from '../../hooks/useAthleteForm';
-import { useAthleteSubmit } from 'apps/frontend/src/app/hooks/useAthleteSubmit';
+import ErrorMessage from './ErrorMessage';
+import { AthleteFormData } from '../../domain/models/Athlete';
+import { useAthlete } from '../hooks/useAthleteForm';
+import { useAthleteSubmit } from '../hooks/useAthleteSubmit';
 
 const AthleteForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
