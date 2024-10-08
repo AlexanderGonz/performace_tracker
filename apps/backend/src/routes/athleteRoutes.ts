@@ -30,8 +30,8 @@ router.get('/', async (c) => {
     
     // Store in cache
     await redisClient.setex('athletes', CACHE_EXPIRATION, JSON.stringify(athletes));
-    
-    return athletes;
+    console.log('Successfully cached athletes data: ' + athletes);
+    return c.json(athletes);
   } catch (error) {
     if (error instanceof APIError) {
       throw error;
@@ -47,7 +47,7 @@ router.post('/', async (c) => {
     // Invalidate cache
     const redisClient = await getRedisClient();
     await redisClient.del('athletes');
-    return athlete;
+    return c.json(athlete);
   } catch (error) {
     if (error instanceof APIError) {
       throw error;
@@ -57,7 +57,17 @@ router.post('/', async (c) => {
 });
 
 // GET athlete by ID
-router.get('/:id', getAthleteById);
+router.get('/:id', async (c) => {
+  try {
+    const athlete = await getAthleteById(c);
+    return c.json(athlete);
+  } catch (error) {
+    if (error instanceof APIError) {
+      throw error;
+    }
+    throw new APIError('Failed to fetch athlete by ID', 500);
+  }
+});
 
 // PUT update athlete
 router.put('/:id', async (c) => {
@@ -66,7 +76,7 @@ router.put('/:id', async (c) => {
     // Invalidate cache
     const redisClient = await getRedisClient();
     await redisClient.del('athletes');
-    return athlete;
+    return c.json(athlete);
   } catch (error) {
     if (error instanceof APIError) {
       throw error;
@@ -76,10 +86,33 @@ router.put('/:id', async (c) => {
 });
 
 // POST add metric to athlete
-router.post('/:id/metrics', addMetric);
+router.post('/:id/metrics', async (c) => {
+  try {
+    const metric = await addMetric(c);
+    // Invalidate cache
+    const redisClient = await getRedisClient();
+    await redisClient.del('athletes');
+    return c.json(metric);
+  } catch (error) {
+    if (error instanceof APIError) {
+      throw error;
+    }
+    throw new APIError('Failed to add metric to athlete', 500);
+  }
+});
 
 // GET metrics for athlete
-router.get('/:id/metrics', getMetrics);
+router.get('/:id/metrics', async (c) => {
+  try {
+    const metrics = await getMetrics(c);
+    return c.json(metrics);
+  } catch (error) {
+    if (error instanceof APIError) {
+      throw error;
+    }
+    throw new APIError('Failed to fetch metrics for athlete', 500);
+  }
+});
 
 // DELETE athlete
 router.delete('/:id', async (c) => {

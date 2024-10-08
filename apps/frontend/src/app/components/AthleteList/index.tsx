@@ -26,11 +26,17 @@ const AthleteList: React.FC = () => {
       </IonHeader>
       <IonContent>
         <IonList>
-          {athletes.map((athlete: any) => (
-            <IonItem key={athlete.id} routerLink={`/athletes/${athlete.id}`}>
-              <IonLabel>{athlete.name}</IonLabel>
+          {athletes && athletes.length > 0 ? (
+            athletes.map((athlete: any) => (
+              <IonItem key={athlete.id} routerLink={`/athletes/${athlete.id}`}>
+                <IonLabel>{athlete.name}</IonLabel>
+              </IonItem>
+            ))
+          ) : (
+            <IonItem>
+              <IonLabel>No athletes found</IonLabel>
             </IonItem>
-          ))}
+          )}
         </IonList>
       </IonContent>
     </IonPage>

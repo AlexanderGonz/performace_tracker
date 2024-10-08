@@ -11,7 +11,7 @@ export const createAthlete = async (c: Context) => {
     const athlete = await prisma.athlete.create({
     data,
     });
-    return c.json(athlete, 201);
+    return athlete;
   } catch (error) {
     throw new APIError('Failed to create athlete', 500);
   }
@@ -20,7 +20,7 @@ export const createAthlete = async (c: Context) => {
 export const getAllAthletes = async (c: Context) => {
   try {
     const athletes = await prisma.athlete.findMany();
-    return c.json(athletes);
+    return athletes;
   } catch (error) {
     throw new APIError('Failed to get athletes', 500);
   }
@@ -36,7 +36,7 @@ export const getAthleteById = async (c: Context) => {
     if (!athlete) {
       throw new APIError('Athlete not found', 404);
     }
-    return c.json(athlete);
+    return athlete;
   } catch (error) {
     throw new APIError('Failed to get athlete', 500);
   }
@@ -50,7 +50,7 @@ export const updateAthlete = async (c: Context) => {
       where: { id },
       data,
     });
-    return c.json(athlete);
+    return athlete;
   } catch (error) {
     throw new APIError('Failed to update athlete', 500);
   }
@@ -66,7 +66,7 @@ export const addMetric = async (c: Context) => {
         athlete: { connect: { id: athleteId } },
       },
     });
-    return c.json(metric, 201);
+    return metric;
   } catch (error) {
     throw new APIError('Failed to add metric', 500);
   }
@@ -80,19 +80,18 @@ export const getMetrics = async (c: Context) => {
     const metrics = await prisma.metric.findMany({
       where: whereClause,
     });
-    return c.json(metrics);
+    return metrics;
   } catch (error) {
     throw new APIError('Failed to get metrics', 500);
   }
 };
 
-export const deleteAthlete = async (c: Context) => {
+export const deleteAthlete = async (c: Context): Promise<void> => {
   const id = c.req.param('id');
   try {
     await prisma.athlete.delete({
       where: { id },
     });
-    return c.text('', 204);
   } catch (error) {
     throw new APIError('Failed to delete athlete', 500);
   }
