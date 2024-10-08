@@ -26,9 +26,9 @@ ALTER TABLE "Metric" ADD CONSTRAINT "Metric_athleteId_fkey" FOREIGN KEY ("athlet
 
 -- Insert initial data
 INSERT INTO "Athlete" (id, name, age, team) VALUES
-('1', 'John Doe', 25, 'Team A'),
-('2', 'Jane Smith', 30, 'Team B'),
-('3', 'Alice Johnson', 28, 'Team C');
+('6a3b5fe0-bc1a-4988-a9e4-1e9210e40a96', 'John Doe', 25, 'Team A'),
+('37b3e2a1-128e-4f63-b7b6-78739a244272', 'Jane Smith', 30, 'Team B'),
+('045876fd-c1b9-41f8-8273-e56823bd3fe6', 'Alice Johnson', 28, 'Team C');
 
 INSERT INTO "Metric" (id, "athleteId", "metricType", value, unit, timestamp)
 VALUES (
