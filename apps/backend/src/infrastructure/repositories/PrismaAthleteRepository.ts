@@ -20,33 +20,55 @@ export class PrismaAthleteRepository implements AthleteRepository {
     });
     return athlete ? this.mapToDomainAthlete(athlete) : null;
   }
+  
   async save(athlete: Athlete): Promise<void> {
-    await this.prisma.athlete.upsert({
-      where: { id: athlete.id },
-      update: {
-        name: athlete.name,
-        age: athlete.age,
-        team: athlete.team,
-        metrics: {
-          upsert: athlete.metrics.map(metric => ({
+    try {
+      await this.prisma.$transaction(async (prisma) => {
+        // Upsert the athlete
+      const upsertedAthlete = await prisma.athlete.upsert({
+        where: { id: athlete.id },
+        update: {
+          name: athlete.name,
+          age: Number(athlete.age),
+          team: athlete.team,
+        },
+        create: {
+          id: athlete.id,
+          name: athlete.name,
+          age: Number(athlete.age),
+          team: athlete.team,
+        },
+      });
+  
+      // Handle metrics
+      if (athlete.metrics && athlete.metrics.length > 0) {
+        // Delete metrics that are no longer present
+        await prisma.metric.deleteMany({
+          where: {
+            athleteId: athlete.id,
+            id: { notIn: athlete.metrics.map(m => m.id) },
+          },
+        });
+  
+        // Upsert each metric
+        for (const metric of athlete.metrics) {
+          await prisma.metric.upsert({
             where: { id: metric.id },
             update: this.mapMetricToUpdateInput(metric),
-            create: this.mapMetricToCreateInput(metric),
-          })),
-        },
-      },
-      create: {
-        id: athlete.id,
-        name: athlete.name,
-        age: athlete.age,
-        team: athlete.team,
-        metrics: {
-          create: athlete.metrics.map(this.mapMetricToCreateInput),
-        },
-      },
+            create: {
+              ...this.mapMetricToCreateInput(metric),
+              athleteId: upsertedAthlete.id,
+            },
+          });
+        }
+      }
     });
+    console.log('Athlete saved successfully');
+  } catch (error) {
+    console.error('Error saving athlete:', error);
+    throw error;
   }
-
+}
   private mapMetricToUpdateInput(metric: Metric) {
     return {
       metricType: metric.metricType,
@@ -55,7 +77,7 @@ export class PrismaAthleteRepository implements AthleteRepository {
       timestamp: metric.timestamp,
     };
   }
-
+  
   private mapMetricToCreateInput(metric: Metric) {
     return {
       id: metric.id,
@@ -76,7 +98,7 @@ export class PrismaAthleteRepository implements AthleteRepository {
       prismaAthlete.name,
       prismaAthlete.age,
       prismaAthlete.team,
-      prismaAthlete.metrics.map((m: any) => new Metric(m.id, m.athleteId, m.type, m.value, m.unit, m.date))
+      prismaAthlete.metrics.map((m: Metric) => new Metric(m.id, m.athleteId, m.metricType, m.value, m.unit, m.timestamp))
     );
   }
 }

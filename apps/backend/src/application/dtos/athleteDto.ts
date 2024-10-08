@@ -18,6 +18,6 @@ export interface MetricDto {
   metricType: string;
   value: number;
   unit: string;
-  timestamp: Date;
+  date: Date;
   athleteId: string;
 }

@@ -48,7 +48,7 @@ export class MetricService {
       metricType: metric.metricType,
       value: metric.value,
       unit: metric.unit,
-      timestamp: metric.timestamp,
+      date: metric.timestamp,
       athleteId: metric.athleteId,
     };
   }

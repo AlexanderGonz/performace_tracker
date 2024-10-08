@@ -1,6 +1,6 @@
 import { Athlete } from '../../domain/entities/Athlete';
 import { AthleteRepository } from '../../domain/repositories/AthleteRepository';
-import { Metric } from '../../domain/entities/Metric';
+import { CreateAthleteDto, UpdateAthleteDto } from 'apps/backend/src/application/dtos/athleteDto';
 
 
 export class AthleteService {
@@ -14,9 +14,9 @@ export class AthleteService {
     return this.athleteRepository.findById(id);
   }
 
-  async createAthlete(athleteData: Omit<Athlete, 'id'>): Promise<Athlete> {
+  async createAthlete(athleteData: CreateAthleteDto): Promise<Athlete> {
     const newAthlete = new Athlete(
-      Date.now().toString(), // Generate a unique ID
+      crypto.randomUUID(),
       athleteData.name,
       athleteData.age,
       athleteData.team
@@ -25,7 +25,7 @@ export class AthleteService {
     return newAthlete;
   }
 
-  async updateAthlete(id: string, athleteData: Partial<Athlete>): Promise<Athlete | null> {
+  async updateAthlete(id: string, athleteData: UpdateAthleteDto): Promise<Athlete | null> {
     const existingAthlete = await this.athleteRepository.findById(id);
     if (!existingAthlete) return null;
 

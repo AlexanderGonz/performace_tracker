@@ -15,6 +15,7 @@ import '@ionic/react/css/typography.css';
 import Home from 'apps/frontend/src/app/pages/Home';
 import AthleteList from 'apps/frontend/src/app/components/AthleteList';
 import AthleteForm from 'apps/frontend/src/app/components/AthleteForm';
+import AthleteDetail from 'apps/frontend/src/app/pages/AthleteDetail';
 
 setupIonicReact();
 
@@ -27,7 +28,7 @@ const App: React.FC = () => (
         <IonRouterOutlet>
           <Route path="/home" component={Home} exact={true} />
           <Route path="/athletes" component={AthleteList} exact={true} />
-          {/* <Route path="/athletes/:id" component={AthleteDetails} exact={true} /> */}
+          <Route path="/athletes/:id" component={AthleteDetail} exact={true} />
           <Route path="/athletes/new" component={AthleteForm} exact={true} />
           <Route path="/athletes/:id/edit" component={AthleteForm} exact={true} />
           {/* <Route path="/athletes/:id/metrics/new" component={MetricForm} exact={true} /> */}

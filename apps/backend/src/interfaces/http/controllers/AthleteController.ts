@@ -12,7 +12,7 @@ export class AthleteController {
   async createAthlete(c: Context) {
     try {
       const data = await c.req.json<CreateAthleteDto>();
-      const athlete = await this.athleteService.createAthlete(data as any);
+      const athlete = await this.athleteService.createAthlete(data);
       await this.invalidateCache();
       return c.json(athlete, 201);
     } catch (error) {
@@ -50,7 +50,7 @@ export class AthleteController {
     try {
       const id = c.req.param('id');
       const data = await c.req.json<UpdateAthleteDto>();
-      const athlete = await this.athleteService.updateAthlete(id, data as any);
+      const athlete = await this.athleteService.updateAthlete(id, data);
       await this.invalidateCache();
       return c.json(athlete);
     } catch (error) {

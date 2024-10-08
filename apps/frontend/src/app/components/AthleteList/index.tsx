@@ -1,18 +1,20 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, useIonViewWillEnter } from '@ionic/react';
 import ErrorMessage from '../ErrorMessage';
-
-const fetchAthletes = async () => {
-  const response = await fetch('http://localhost:4000/athletes');
-  if (!response.ok) {
-    throw new Error('Failed to fetch athletes');
-  }
-  return response.json();
-};
+import { useAthletes } from '../../hooks/useAthletes';
+import { Athlete } from '../../../domain/models/Athlete';
+import FloatingAddButton from 'apps/frontend/src/app/components/FloatingButton';
+import { useQueryClient } from '@tanstack/react-query';
 
 const AthleteList: React.FC = () => {
-  const { data: athletes, isLoading, error } = useQuery({ queryKey: ['athletes'], queryFn: fetchAthletes });
+  const queryClient = useQueryClient();
+  const { data: athletes, isLoading, error, refetch } = useAthletes();
+
+  useIonViewWillEnter(() => {
+    console.log('AthleteList view will enter');
+    queryClient.invalidateQueries({ queryKey: ['athletes'] });
+    refetch();
+  });
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <ErrorMessage message={(error as Error).message} />;
@@ -27,7 +29,7 @@ const AthleteList: React.FC = () => {
       <IonContent>
         <IonList>
           {athletes && athletes.length > 0 ? (
-            athletes.map((athlete: any) => (
+            athletes.map((athlete: Athlete) => (
               <IonItem key={athlete.id} routerLink={`/athletes/${athlete.id}`}>
                 <IonLabel>{athlete.name}</IonLabel>
               </IonItem>
@@ -38,6 +40,7 @@ const AthleteList: React.FC = () => {
             </IonItem>
           )}
         </IonList>
+        <FloatingAddButton routePath="/athletes/new" />
       </IonContent>
     </IonPage>
   );
