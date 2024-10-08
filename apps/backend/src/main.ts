@@ -29,7 +29,7 @@ const metricRepository = new PrismaMetricRepository(prisma);
 
 // Create services
 const athleteService = new AthleteService(athleteRepository);
-const metricService = new MetricService(metricRepository);
+const metricService = new MetricService(metricRepository, athleteRepository);
 
 // Create controllers
 const athleteController = new AthleteController(athleteService);

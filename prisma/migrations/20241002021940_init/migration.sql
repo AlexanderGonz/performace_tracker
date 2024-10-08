@@ -33,7 +33,7 @@ INSERT INTO "Athlete" (id, name, age, team) VALUES
 INSERT INTO "Metric" (id, "athleteId", "metricType", value, unit, timestamp)
 VALUES (
   '123e4567-e89b-12d3-a456-426614174001',
-  '1',
+  '6a3b5fe0-bc1a-4988-a9e4-1e9210e40a96',
   'Speed',
   5.7,
   'm/s',

@@ -11,31 +11,27 @@ export class AthleteController {
 
   async createAthlete(c: Context) {
     try {
-      const data: CreateAthleteDto = await c.req.json();
+      const data = await c.req.json<CreateAthleteDto>();
       const athlete = await this.athleteService.createAthlete(data as any);
-      const redisClient = await getRedisClient();
-      await redisClient.del('athletes');
+      await this.invalidateCache();
       return c.json(athlete, 201);
     } catch (error) {
-      if (error instanceof APIError) throw error;
-      throw new APIError('Failed to create athlete', 500);
+      return this.handleError(error, 'Failed to create athlete');
     }
   }
 
   async getAllAthletes(c: Context) {
     try {
-      const redisClient = await getRedisClient();
-      const cachedAthletes = await redisClient.get('athletes');
+      const cachedAthletes = await this.getCachedAthletes();
       if (cachedAthletes) {
-        return c.json(JSON.parse(cachedAthletes));
+        return c.json(cachedAthletes);
       }
 
       const athletes = await this.athleteService.getAllAthletes();
-      await redisClient.setex('athletes', CACHE_EXPIRATION, JSON.stringify(athletes));
+      await this.cacheAthletes(athletes);
       return c.json(athletes);
     } catch (error) {
-      if (error instanceof APIError) throw error;
-      throw new APIError('Failed to fetch athletes', 500);
+      return this.handleError(error, 'Failed to fetch athletes');
     }
   }
 
@@ -53,14 +49,12 @@ export class AthleteController {
   async updateAthlete(c: Context) {
     try {
       const id = c.req.param('id');
-      const data: UpdateAthleteDto = await c.req.json();
+      const data = await c.req.json<UpdateAthleteDto>();
       const athlete = await this.athleteService.updateAthlete(id, data as any);
-      const redisClient = await getRedisClient();
-      await redisClient.del('athletes');
+      await this.invalidateCache();
       return c.json(athlete);
     } catch (error) {
-      if (error instanceof APIError) throw error;
-      throw new APIError('Failed to update athlete', 500);
+      return this.handleError(error, 'Failed to update athlete');
     }
   }
 
@@ -75,5 +69,26 @@ export class AthleteController {
       if (error instanceof APIError) throw error;
       throw new APIError('Failed to delete athlete', 500);
     }
+  }
+
+  private async getCachedAthletes() {
+    const redisClient = await getRedisClient();
+    const cachedAthletes = await redisClient.get('athletes');
+    return cachedAthletes ? JSON.parse(cachedAthletes) : null;
+  }
+
+  private async cacheAthletes(athletes: any) {
+    const redisClient = await getRedisClient();
+    await redisClient.setex('athletes', CACHE_EXPIRATION, JSON.stringify(athletes));
+  }
+
+  private async invalidateCache() {
+    const redisClient = await getRedisClient();
+    await redisClient.del('athletes');
+  }
+
+  private handleError(error: unknown, defaultMessage: string) {
+    if (error instanceof APIError) throw error;
+    throw new APIError(defaultMessage, 500);
   }
 }

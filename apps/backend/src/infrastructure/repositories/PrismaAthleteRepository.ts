@@ -21,7 +21,49 @@ export class PrismaAthleteRepository implements AthleteRepository {
     return athlete ? this.mapToDomainAthlete(athlete) : null;
   }
   async save(athlete: Athlete): Promise<void> {
-    return;
+    await this.prisma.athlete.upsert({
+      where: { id: athlete.id },
+      update: {
+        name: athlete.name,
+        age: athlete.age,
+        team: athlete.team,
+        metrics: {
+          upsert: athlete.metrics.map(metric => ({
+            where: { id: metric.id },
+            update: this.mapMetricToUpdateInput(metric),
+            create: this.mapMetricToCreateInput(metric),
+          })),
+        },
+      },
+      create: {
+        id: athlete.id,
+        name: athlete.name,
+        age: athlete.age,
+        team: athlete.team,
+        metrics: {
+          create: athlete.metrics.map(this.mapMetricToCreateInput),
+        },
+      },
+    });
+  }
+
+  private mapMetricToUpdateInput(metric: Metric) {
+    return {
+      metricType: metric.metricType,
+      value: metric.value,
+      unit: metric.unit,
+      timestamp: metric.timestamp,
+    };
+  }
+
+  private mapMetricToCreateInput(metric: Metric) {
+    return {
+      id: metric.id,
+      metricType: metric.metricType,
+      value: metric.value,
+      unit: metric.unit,
+      timestamp: metric.timestamp,
+    };
   }
 
   async delete(id: string): Promise<void> {

@@ -16,11 +16,11 @@ export class PrismaMetricRepository implements MetricRepository {
     });
   }
 
-  async getMetrics(athleteId: string, metricType?: string): Promise<Metric[]> {
+  async getMetricsForAthlete(athleteId: string, metricType?: string): Promise<Metric[]> {
     return this.prisma.metric.findMany({
       where: {
         athleteId,
-        ...(metricType && { type: metricType })
+        ...(metricType && { metricType })
       }
     });
   }

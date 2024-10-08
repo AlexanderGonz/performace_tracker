@@ -14,5 +14,14 @@ export class Athlete {
     this.metrics.push(metric);
   }
 
-  // Add other domain logic methods here
+  setMetrics(metrics: Metric[]): void {
+    this.metrics = metrics;
+  }
+
+  getFilteredMetrics(metricType?: string): Metric[] {
+    if (!metricType) {
+      return this.metrics;
+    }
+    return this.metrics.filter(metric => metric.metricType === metricType);
+  }
 }
