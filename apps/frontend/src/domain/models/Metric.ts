@@ -6,3 +6,9 @@ export interface Metric {
   unit: string;
   timestamp: Date;
 }
+
+export interface MetricFormData {
+  metricType: string;
+  value: number;
+  unit: string;
+}

@@ -63,7 +63,6 @@ export class PrismaAthleteRepository implements AthleteRepository {
         }
       }
     });
-    console.log('Athlete saved successfully');
   } catch (error) {
     console.error('Error saving athlete:', error);
     throw error;
@@ -89,7 +88,13 @@ export class PrismaAthleteRepository implements AthleteRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.athlete.delete({ where: { id } });
+    await this.prisma.$transaction(async (prisma) => {
+      await prisma.metric.deleteMany({
+        where: { athleteId: id },
+      });
+
+      await prisma.athlete.delete({ where: { id } });
+    });
   }
 
   private mapToDomainAthlete(prismaAthlete: any): Athlete {

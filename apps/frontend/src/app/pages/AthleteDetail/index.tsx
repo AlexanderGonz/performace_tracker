@@ -1,24 +1,28 @@
 import React, { useMemo } from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, useIonViewWillEnter, IonButton, IonItem, useIonRouter } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, useIonViewWillEnter, IonButton, IonItem, useIonRouter, IonAlert } from '@ionic/react';
 import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import ErrorMessage from '../../components/ErrorMessage';
 import { useAthlete } from '../../hooks/useAthleteForm';
 import Metric from '../../components/Metric';
-import { createMetric } from '../../services/api';
 import { useMetricForm } from '../../hooks/useMetricForm';
-import MetricModal from '../../components/MetricModal';
+import MetricModalForm from '../../components/MetricModalForm';
 import ActionButton from '../../components/ActionButton';
+import { useDeleteAthlete } from '@/app/hooks/useDeleteAthlete';
+import { MetricFormData } from '@/domain/models/Metric';
+import HomeButton from '@/app/components/HomeButton';
 
 const AthleteDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const ionRouter = useIonRouter();
   const queryClient = useQueryClient();
   const { data: athlete, isLoading, error, refetch } = useAthlete(id);
-  const { isOpen, openForm, closeForm, createMetric, isPending: isCreatingMetric, error: createError } = useMetricForm(id);
+  const { isOpen, openForm, closeForm, createMetric, isPending, error: errorMetricForm } = useMetricForm(id);
+  const { deleteAthlete, deleteError } = useDeleteAthlete();
+  const [showDeleteAlert, setShowDeleteAlert] = React.useState(false);
+
 
   useIonViewWillEnter(() => {
-    console.log('AthleteDetail view will enter');
     queryClient.invalidateQueries({ queryKey: ['athlete', id] });
     refetch();
   });
@@ -30,15 +34,28 @@ const AthleteDetail: React.FC = () => {
     return `hsl(${hue}, 70%, 80%)`;
   }, [athlete]);
 
-  const handleSubmit = (data: { metricType: string; value: number; unit: string }) => {
-    createMetric({
-      ...data,
-      timestamp: new Date(),
-    });
+  const handleSubmit = async (data: MetricFormData) => {
+    try {
+      await createMetric({
+        ...data,
+        timestamp: new Date(),
+      });
+      closeForm()
+    } catch (error) {
+      console.error('Error creating metric:', error);
+    }
   };
 
   const navigateToEditForm = () => {
     ionRouter.push(`/athletes/${id}/edit`);
+  };
+
+  const handleDeleteClick = () => {
+    setShowDeleteAlert(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    deleteAthlete(id);
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -49,15 +66,21 @@ const AthleteDetail: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <IonTitle>Athlete Details</IonTitle>
+          <HomeButton />
+        </div>
         </IonToolbar>
       </IonHeader>
       <IonContent>
         <IonCard style={{ backgroundColor: cardColor }}>
-          <IonCardHeader>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <IonCardTitle>{athlete.name}</IonCardTitle>
+        <IonCardHeader>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <IonCardTitle>{athlete.name}</IonCardTitle>
+              <div>
                 <ActionButton onClick={navigateToEditForm} iconType="edit" />
+                <ActionButton onClick={handleDeleteClick} iconType="remove" />
+              </div>
             </div>
           </IonCardHeader>
           <IonCardContent>
@@ -84,13 +107,30 @@ const AthleteDetail: React.FC = () => {
             </IonList>
           </IonCardContent>
         </IonCard>
-        <MetricModal
+        <MetricModalForm
           isOpen={isOpen}
           onClose={closeForm}
           onSubmit={handleSubmit}
-          isLoading={isCreatingMetric}
-          error={createError as Error | null}
+          isLoading={isPending}
+          error={errorMetricForm}
         />
+        <IonAlert
+          isOpen={showDeleteAlert}
+          onDidDismiss={() => setShowDeleteAlert(false)}
+          header="Confirm Delete"
+          message="Are you sure you want to delete this athlete?"
+          buttons={[
+            {
+              text: 'Cancel',
+              role: 'cancel',
+            },
+            {
+              text: 'Delete',
+              handler: handleDeleteConfirm,
+            },
+          ]}
+        />
+        {deleteError && <ErrorMessage message={(deleteError as Error).message} />}
       </IonContent>
     </IonPage>
   );

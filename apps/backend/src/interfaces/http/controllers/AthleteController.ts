@@ -64,7 +64,7 @@ export class AthleteController {
       await this.athleteService.deleteAthlete(id);
       const redisClient = await getRedisClient();
       await redisClient.del('athletes');
-      return c.text('', 204);
+      return new Response(null, { status: 204 });
     } catch (error) {
       if (error instanceof APIError) throw error;
       throw new APIError('Failed to delete athlete', 500);

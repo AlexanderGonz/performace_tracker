@@ -27,7 +27,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({ onClick, label, iconType })
   const icon = iconType ? getIcon(iconType) : undefined;
 
   return (
-    <IonButton size="small" color="primary" onClick={onClick}>
+    <IonButton size="small" color={iconType == 'remove' ? 'danger' : "primary"} onClick={onClick}>
       {icon && <IonIcon icon={icon} style={{ marginRight: '5px' }} />}
       {label && label}
     </IonButton>

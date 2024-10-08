@@ -1,8 +1,10 @@
 import { Metric } from '../../domain/models/Metric';
 import { Athlete, AthleteFormData } from '../../domain/models/Athlete';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+
 export const fetchAthletes = async (): Promise<Athlete[]> => {
-  const response = await fetch('http://localhost:4000/athletes');
+  const response = await fetch(`${API_URL}/athletes`);
   if (!response.ok) {
     throw new Error('Failed to fetch athletes');
   }
@@ -10,7 +12,7 @@ export const fetchAthletes = async (): Promise<Athlete[]> => {
 };
 
 export const createAthlete = async (data: AthleteFormData): Promise<Athlete> => {
-  const response = await fetch('http://localhost:4000/athletes', {
+  const response = await fetch(`${API_URL}/athletes`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -23,7 +25,7 @@ export const createAthlete = async (data: AthleteFormData): Promise<Athlete> => 
 };
 
 export const updateAthlete = async (id: string, data: AthleteFormData): Promise<Athlete> => {
-  const response = await fetch(`http://localhost:4000/athletes/${id}`, {
+  const response = await fetch(`${API_URL}/athletes/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -35,7 +37,7 @@ export const updateAthlete = async (id: string, data: AthleteFormData): Promise<
 };
 
 export const getAthlete = async (id: string): Promise<Athlete> => {
-  const response = await fetch(`http://localhost:4000/athletes/${id}`);
+  const response = await fetch(`${API_URL}/athletes/${id}`);
   if (!response.ok) {
     throw new Error('Failed to fetch athlete');
   }
@@ -43,7 +45,7 @@ export const getAthlete = async (id: string): Promise<Athlete> => {
 };
 
 export const createMetric = async (athleteId: string, data: Omit<Metric, 'id' | 'athleteId'>): Promise<Metric> => {
-  const response = await fetch(`http://localhost:4000/athletes/${athleteId}/metrics`, {
+  const response = await fetch(`${API_URL}/athletes/${athleteId}/metrics`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -52,4 +54,14 @@ export const createMetric = async (athleteId: string, data: Omit<Metric, 'id' | 
     throw new Error('Failed to create metric');
   }
   return response.json();
+};
+
+export const deleteAthlete = async (id: string): Promise<void> => {
+  const response = await fetch(`${API_URL}/athletes/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to delete athlete');
+  }
 };

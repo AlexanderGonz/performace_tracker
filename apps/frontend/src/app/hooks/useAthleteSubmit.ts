@@ -18,17 +18,13 @@ export const useAthleteSubmit = (athleteId?: string) => {
     try {
       if (athleteId) {
         await updateAthleteMutation?.mutateAsync(formattedData);
-      } else {
-        await createAthleteMutation.mutateAsync(formattedData);
-      }
-
-      await queryClient.invalidateQueries({ queryKey: ['athletes'] });
-      
-      if (athleteId) {
         router.goBack();
       } else {
-        router.push('/home', 'root', 'replace');
+        const { id } = await createAthleteMutation.mutateAsync(formattedData);
+        router.push(`/athletes/${id}`, 'root', 'replace');
       }
+      await queryClient.invalidateQueries({ queryKey: ['athletes'] });
+
     } catch (error) {
       console.error('Failed to save athlete:', error);
     }

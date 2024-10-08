@@ -10,7 +10,6 @@ const AthleteList: React.FC = () => {
   const { data: athletes, isLoading, error, refetch } = useAthletes();
 
   useIonViewWillEnter(() => {
-    console.log('AthleteList view will enter');
     queryClient.invalidateQueries({ queryKey: ['athletes'] });
     refetch();
   });

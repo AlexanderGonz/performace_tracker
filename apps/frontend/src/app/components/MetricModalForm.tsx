@@ -14,6 +14,12 @@ import {
 } from '@ionic/react';
 import ErrorMessage from './ErrorMessage';
 
+interface MetricFormData {
+  metricType: string;
+  value: number;
+  unit: string;
+}
+
 interface MetricModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -34,6 +40,11 @@ const MetricModal: React.FC<MetricModalProps> = ({ isOpen, onClose, onSubmit, is
       value: parseFloat(value),
       unit,
     });
+    if (!error) {
+      setMetricType('');
+      setValue('');
+      setUnit('');
+    }
   };
 
   return (
@@ -51,7 +62,6 @@ const MetricModal: React.FC<MetricModalProps> = ({ isOpen, onClose, onSubmit, is
               <IonSelectOption value="weight">Weight</IonSelectOption>
               <IonSelectOption value="height">Height</IonSelectOption>
               <IonSelectOption value="speed">Speed</IonSelectOption>
-              {/* Add more metric types as needed */}
             </IonSelect>
           </IonItem>
           <IonItem>
