@@ -1,17 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { IonPage, useIonViewWillEnter } from '@ionic/react';
 import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import ErrorMessage from '../components/ErrorMessage';
 import { useAthlete } from '../hooks/useAthlete';
-import { useMetricFormAndSubmission } from '../hooks/useMetricFormAndSubmission';
-import MetricModalForm from '../components/MetricModalForm';
-import { MetricFormData } from '../../domain/models/Metric';
 import PageHeader from '../components/PageHeader';
 import PageContent from '../components/PageContent';
 import AthleteCard from '../components/AthleteCard';
 import MetricsSection from '../components/MetricsSection';
-import DeleteConfirmation from '../components/DeleteConfirmation';
+
+const MetricModalForm = lazy(() => import('../components/MetricModalForm'));
+const DeleteConfirmation = lazy(() => import('../components/DeleteConfirmation'));
 
 const AthleteDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -42,16 +41,20 @@ const AthleteDetail: React.FC = () => {
           onDelete={() => setShowDeleteAlert(true)} 
         />
         <MetricsSection metrics={athlete.metrics} onAddMetric={openForm} />
-        <MetricModalForm 
-          athleteId={id} 
-          isOpen={isModalOpen} 
-          onClose={closeForm}
-        />
-        <DeleteConfirmation 
-          athleteId={id}  
-          showDeleteAlert={showDeleteAlert}
-          setShowDeleteAlert={setShowDeleteAlert}
-        />
+        <Suspense fallback={<div>Loading form...</div>}>
+          <MetricModalForm 
+            athleteId={id} 
+            isOpen={isModalOpen} 
+            onClose={closeForm}
+          />
+        </Suspense>
+        <Suspense fallback={<div>Loading...</div>}>
+          <DeleteConfirmation 
+            athleteId={id}  
+            showDeleteAlert={showDeleteAlert}
+            setShowDeleteAlert={setShowDeleteAlert}
+          />
+        </Suspense>
       </PageContent>
     </IonPage>
   );

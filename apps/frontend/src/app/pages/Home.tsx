@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { Suspense, lazy} from 'react';
 import { IonPage, useIonViewWillEnter } from '@ionic/react';
 import { useQueryClient } from '@tanstack/react-query';
-import AthleteList from '../components/AthleteList';
 import { useAthletes } from '../hooks/useAthletes';
 import PageContent from '@/app/components/PageContent';
 import PageHeader from '@/app/components/PageHeader';
 import FloatingAddButton from '@/app/components/FloatingButton';
+
+const AthleteList = lazy(() => import('../components/AthleteList'));
 
 const Home: React.FC = () => {
   const queryClient = useQueryClient();
@@ -20,7 +21,9 @@ const Home: React.FC = () => {
     <IonPage>
       <PageHeader title="Athletes" />
       <PageContent>
-        <AthleteList athletes={athletes} isLoading={isLoading} error={error as Error | null} />
+        <Suspense fallback={<div>Loading athletes...</div>}>
+          <AthleteList athletes={athletes} isLoading={isLoading} error={error as Error | null} />
+        </Suspense>
         <FloatingAddButton routePath="/athletes/new" />
       </PageContent>
     </IonPage>
