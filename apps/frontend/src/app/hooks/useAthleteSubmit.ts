@@ -21,9 +21,14 @@ export const useAthleteSubmit = (athleteId?: string) => {
       } else {
         await createAthleteMutation.mutateAsync(formattedData);
       }
-      console.log('Athlete saved successfully, invalidating queries and navigating...');
+
       await queryClient.invalidateQueries({ queryKey: ['athletes'] });
-      router.push('/athletes', 'root', 'replace');
+      
+      if (athleteId) {
+        router.goBack();
+      } else {
+        router.push('/athletes', 'root', 'replace');
+      }
     } catch (error) {
       console.error('Failed to save athlete:', error);
     }

@@ -14,7 +14,7 @@ export class MetricService {
     }
 
     const newMetric = new Metric(
-      '', // id will be generated
+      crypto.randomUUID(),
       athleteId,
       metricData.metricType,
       metricData.value,

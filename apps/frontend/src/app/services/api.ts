@@ -1,3 +1,4 @@
+import { Metric } from 'apps/frontend/src/domain/models/Metric';
 import { Athlete, AthleteFormData } from '../../domain/models/Athlete';
 
 export const fetchAthletes = async (): Promise<Athlete[]> => {
@@ -37,6 +38,18 @@ export const getAthlete = async (id: string): Promise<Athlete> => {
   const response = await fetch(`http://localhost:4000/athletes/${id}`);
   if (!response.ok) {
     throw new Error('Failed to fetch athlete');
+  }
+  return response.json();
+};
+
+export const createMetric = async (athleteId: string, data: Omit<Metric, 'id' | 'athleteId'>): Promise<Metric> => {
+  const response = await fetch(`http://localhost:4000/athletes/${athleteId}/metrics`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to create metric');
   }
   return response.json();
 };
