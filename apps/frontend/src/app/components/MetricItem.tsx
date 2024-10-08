@@ -1,12 +1,12 @@
 import React from 'react';
 import { IonItem, IonLabel, IonNote } from '@ionic/react';
-import { Metric as MetricType } from '../../domain/models/Metric';
+import { MetricViewModel} from '../../domain/models/Metric';
 
-interface MetricProps {
-  metric: MetricType;
+interface MetricItemProps {
+  metric: MetricViewModel;
 }
 
-const Metric: React.FC<MetricProps> = ({ metric }) => {
+const MetricItem: React.FC<MetricItemProps> = ({ metric }) => {
   return (
     <IonItem>
       <IonLabel>
@@ -20,4 +20,4 @@ const Metric: React.FC<MetricProps> = ({ metric }) => {
   );
 };
 
-export default Metric;
+export default MetricItem;

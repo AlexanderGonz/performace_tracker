@@ -5,12 +5,13 @@ import { pencil, add, trash } from 'ionicons/icons';
 type IconType = 'edit' | 'add' | 'remove';
 
 interface ActionButtonProps {
-  onClick: () => void;
+  onClick?: () => void;
   label?: string;
   iconType?: IconType;
+  routerLink?: string;
 }
 
-const ActionButton: React.FC<ActionButtonProps> = ({ onClick, label, iconType }) => {
+const ActionButton: React.FC<ActionButtonProps> = ({ onClick, label, iconType, routerLink }) => {
   const getIcon = (type: IconType) => {
     switch (type) {
       case 'edit':
@@ -27,7 +28,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({ onClick, label, iconType })
   const icon = iconType ? getIcon(iconType) : undefined;
 
   return (
-    <IonButton size="small" color={iconType == 'remove' ? 'danger' : "primary"} onClick={onClick}>
+    <IonButton size="small" color={iconType == 'remove' ? 'danger' : "primary"} onClick={onClick} routerLink={routerLink}>
       {icon && <IonIcon icon={icon} style={{ marginRight: '5px' }} />}
       {label && label}
     </IonButton>

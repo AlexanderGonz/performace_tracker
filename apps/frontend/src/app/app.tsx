@@ -13,7 +13,7 @@ import '@ionic/react/css/structure.css';
 import '@ionic/react/css/typography.css';
 
 import Home from './pages/Home';
-import AthleteForm from './components/AthleteForm';
+import AthleteForm from './pages/AthleteForm';
 import AthleteDetail from './pages/AthleteDetail';
 
 setupIonicReact();

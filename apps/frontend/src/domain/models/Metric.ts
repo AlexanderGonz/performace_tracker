@@ -12,3 +12,11 @@ export interface MetricFormData {
   value: number;
   unit: string;
 }
+
+export interface MetricViewModel {
+  id: string;
+  metricType: string;
+  value: number;
+  unit: string;
+  timestamp: Date;
+}
