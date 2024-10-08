@@ -2,7 +2,8 @@ import { athleteRoutes } from './routes/athleteRoutes';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { PrismaClient } from '@prisma/client';
-
+import { getRedisClient } from './config/cache';
+import { serve } from '@hono/node-server';
 
 const app = new Hono();
 const prisma = new PrismaClient();
@@ -30,12 +31,12 @@ app.onError((err, c) => {
   return c.json({ error: 'Internal Server Error' }, 500);
 });
 
-import { serve } from '@hono/node-server';
 const port = parseInt(process.env.PORT || '4000');
 
-prisma.$connect()
+Promise.all([prisma.$connect(), getRedisClient()])
+Promise.all([prisma.$connect()])
   .then(() => {
-    console.log('Connected to the database');
+    console.log('Connected to the database and Redis');
     serve({
       fetch: app.fetch,
       port
@@ -43,6 +44,6 @@ prisma.$connect()
     console.log(`Server is running on port ${port}`);
   })
   .catch((error) => {
-    console.error('Failed to connect to the database:', error);
+    console.error('Failed to connect to the database or Redis:', error);
     process.exit(1);
   });

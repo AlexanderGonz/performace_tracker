@@ -21,6 +21,8 @@ services:
     container_name: backend
     environment:
       DATABASE_URL: "postgresql://postgres:password@localhost:5432/performance_tracker_db"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     ports:
       - "4000:4000"
     depends_on:
@@ -44,10 +46,19 @@ services:
     networks:
       - app-network
 
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
 networks:
   app-network:
     driver: bridge
 
 volumes:
   pg-data:
+    driver: local
+  redis-data:
     driver: local
