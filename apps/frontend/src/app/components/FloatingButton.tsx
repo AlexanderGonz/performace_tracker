@@ -15,7 +15,7 @@ const FloatingAddButton: React.FC<FloatingAddButtonProps> = ({ routePath }) => {
   };
 
   return (
-    <IonFab vertical="bottom" horizontal="end" slot="fixed" style={{ bottom: '80px', right: '40px' }}>
+    <IonFab vertical="bottom" horizontal="end" slot="fixed" style={{ bottom: '80px', right: '40px' }} data-testid="floating-add-button">
       <IonFabButton onClick={handleClick}>
         <IonIcon icon={add} />
       </IonFabButton>
