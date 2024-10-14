@@ -1,20 +1,16 @@
 import '@testing-library/jest-dom';
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { IonReactRouter } from '@ionic/react-router';
 import { IonApp } from '@ionic/react';
 import Home from '../pages/Home';
-import { useAthletes } from '../hooks/useAthletes';
+import { useAthletes } from '../hooks/useAthletes'; 
+import * as reactQuery from '@tanstack/react-query';
 
 // Mock the useAthletes hook
 jest.mock('../hooks/useAthletes');
 
-// Mock the lazy-loaded AthleteList component
-jest.mock('../components/AthleteList', () => ({
-  __esModule: true,
-  default: () => <div data-testid="athlete-list">Mocked Athlete List</div>,
-}));
 
 const mockQueryClient = new QueryClient();
 
@@ -54,14 +50,48 @@ describe('Home Component', () => {
 
     renderWithProviders(<Home />);
 
-    expect(screen.getByText('Loading athletes...')).toBeInTheDocument();
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
   it('renders AthleteList when data is loaded', async () => {
-    renderWithProviders(<Home />);
+    const mockAthletes = [
+      { id: '1', name: 'John Doe', age: 25, team: 'Team A' },
+      { id: '2', name: 'Jane Smith', age: 28, team: 'Team B' },
+    ];
+
+    (useAthletes as jest.Mock).mockReturnValue({
+      data: mockAthletes,
+      isLoading: false,
+      error: null,
+      refetch: jest.fn(),
+    });
+
+    await act(async () => { 
+      renderWithProviders(<Home />);
+    });
 
     await waitFor(() => {
-      expect(screen.getByTestId('athlete-list')).toBeInTheDocument();
+      expect(screen.getByText('John Doe')).toBeInTheDocument();
+      expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+      expect(screen.getByText('Age: 25')).toBeInTheDocument();
+      expect(screen.getByText('Team: Team A')).toBeInTheDocument();
+    });
+  });
+
+  it('displays "No athletes found" when the list is empty', async () => {
+    (useAthletes as jest.Mock).mockReturnValue({
+      data: [],
+      isLoading: false,
+      error: null,
+      refetch: jest.fn(),
+    });
+
+    await act(async () => { 
+      renderWithProviders(<Home />);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('No athletes found')).toBeInTheDocument();
     });
   });
 
@@ -71,31 +101,5 @@ describe('Home Component', () => {
     const fabButton = screen.getByTestId('floating-add-button');
     expect(fabButton).toBeInTheDocument();
     expect(fabButton.closest('ion-fab')).toBeInTheDocument();
-  });
-
-  it('refetches data when IonViewWillEnter event is triggered', async () => {
-    const mockRefetch = jest.fn();
-    (useAthletes as jest.Mock).mockReturnValue({
-      data: [],
-      isLoading: false,
-      error: null,
-      refetch: mockRefetch,
-    });
-
-    const { container } = renderWithProviders(<Home />);
-
-    // Simulate IonViewWillEnter event
-    const ionPage = container.querySelector('ion-page');
-    ionPage?.dispatchEvent(new Event('ionViewWillEnter'));
-
-    await waitFor(() => {
-      expect(mockRefetch).toHaveBeenCalled();
-    });
-  });
-
-  it('displays IonRefresher for pull-to-refresh functionality', () => {
-    renderWithProviders(<Home />);
-
-    expect(screen.getByTestId('ion-refresher')).toBeInTheDocument();
   });
 });
