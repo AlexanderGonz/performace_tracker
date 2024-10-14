@@ -20,7 +20,7 @@ services:
       dockerfile: Dockerfile.backend
     container_name: backend
     environment:
-      DATABASE_URL: "postgresql://postgres:password@localhost:5432/performance_tracker_db"
+      DATABASE_URL: "postgresql://postgres:password@postgres:5432/performance_tracker_db"
       REDIS_HOST: redis
       REDIS_PORT: 6379
     ports:
